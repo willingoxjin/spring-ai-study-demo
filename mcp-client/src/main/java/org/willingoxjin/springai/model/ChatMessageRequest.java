@@ -1,0 +1,26 @@
+package org.willingoxjin.springai.model;
+
+import java.io.Serial;
+import java.io.Serializable;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * @author Jin.Nie
+ */
+@Getter
+@Setter
+@ToString
+public class ChatMessageRequest implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    private String clientId;
+
+    private String prompt;
+
+    private String sessionId;
+
+}

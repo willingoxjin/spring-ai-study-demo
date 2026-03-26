@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>sse client test</title>
+</head>
+<body>
+<div>
+  <div id="connect-form">
+    <label for="userId"></label><input type="text" id="userId" placeholder="Enter user ID">
+    <button id="connect" onclick="connect()">connect</button>
+  </div>
+  <div id="connect-state">未连接</div>
+  <div id="message"></div>
+</div>
+</body>
+
+<script>
+  var source
+  var isConnected = false
+
+  function connect() {
+    if (!window.EventSource) {
+      alert('Your browser does not support Server-Sent Events.');
+      return;
+    }
+    try {
+      if (!source) source.close()
+    } catch (e) {
+      console.warn(e)
+    }
+
+    let clientId = document.getElementById('userId').value
+    source = new EventSource('http://127.0.0.1:19000/mcp-client/sse/connect?clientId=' + clientId)
+
+    source.onopen = function (e) {
+      console.log('onopen: connected.')
+      isConnected = true;
+      document.getElementById('connect-form').style.display = 'none'
+      document.getElementById('connect-state').innerHTML = '已连接，userId=' + userId;
+    }
+
+    // 客户端接收到服务端发来的消息的回调
+    source.onmessage = function (e) {
+      console.log("onmessage, MESSAGE: ", e.data)
+      let text = document.getElementById('message').innerHTML
+      text = text + '<br>' + e.data
+      document.getElementById('message').innerHTML = text;
+    }
+
+    // 自定义事件
+    source.addEventListener('append', function (e) {
+      console.log("append, MESSAGE: ", e.data)
+      let text = document.getElementById('message').innerHTML
+      text = text + '<br>' + e.data
+      document.getElementById('message').innerHTML = text
+    }, false)
+
+    // error 事件
+    source.onerror = function (e) {
+      if (e.readyState === EventSource.CLOSED) {
+        console.log('Connection closed.')
+        isConnected = false;
+        document.getElementById('connect').style.display = 'block'
+        document.getElementById('connect-state').innerHTML = '连接失败'
+      } else {
+        console.log('Connection error.')
+      }
+    }
+  }
+
+</script>
+
+</html>

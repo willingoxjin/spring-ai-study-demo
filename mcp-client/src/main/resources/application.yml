@@ -1,0 +1,30 @@
+server:
+  port: 19000
+  servlet:
+    context-path: /mcp-client
+    # 强制设置编码为 UTF-8
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-response: true
+
+spring:
+  application:
+    name: mcp-client
+
+logging:
+  level:
+    root: info
+    org.willingoxjin: debug
+
+# Spring AI Config
+---
+spring:
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${OPENAI_BASE_URL} # 调用api地址
+      chat:
+        options:
+          model: ${OPENAI_CHAT_MODEL} # 模型:deepseek-chat
