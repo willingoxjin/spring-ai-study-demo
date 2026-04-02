@@ -12,6 +12,11 @@ server:
 spring:
   application:
     name: mcp-client
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 9379
+      password: 123456
 
 logging:
   level:
@@ -28,3 +33,9 @@ spring:
       chat:
         options:
           model: ${OPENAI_CHAT_MODEL} # 模型:deepseek-chat
+    # 向量配置
+    vectorstore:
+      redis:
+        initialize-schema: true             # 是否初始化所需模式
+        index-name: rag-vector              # 用于向量存储的索引名
+        prefix: 'rag_document:'             # 存储到 Redis key 前缀

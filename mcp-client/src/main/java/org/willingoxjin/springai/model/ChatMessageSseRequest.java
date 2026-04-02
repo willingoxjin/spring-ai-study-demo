@@ -1,7 +1,6 @@
 package org.willingoxjin.springai.model;
 
 import java.io.Serial;
-import java.io.Serializable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -12,13 +11,13 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ChatMessageRequest implements Serializable {
+public class ChatMessageSseRequest extends ChatMessageRequest {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private String prompt;
+    private String clientId;
 
-    private Boolean knowledgeBase;
+    private String sessionId;
 
 }

@@ -31,6 +31,25 @@
       <groupId>org.springframework.ai</groupId>
       <artifactId>spring-ai-starter-model-openai</artifactId>
     </dependency>
+    <!-- spring ai 向量存储-redis -->
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-advisors-vector-store</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-starter-vector-store-redis</artifactId>
+    </dependency>
+    <!-- spring ai 嵌入式文本模型 -->
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-starter-model-transformers</artifactId>
+    </dependency>
+    <!-- spring ai 文档解析 -->
+    <dependency>
+      <groupId>org.springframework.ai</groupId>
+      <artifactId>spring-ai-tika-document-reader</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>

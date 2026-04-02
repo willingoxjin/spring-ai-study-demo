@@ -134,7 +134,7 @@ createApp({
       const encodedMessage = encodeURIComponent(text);
       const webParam = webEnabled.value ? 'true' : 'false';
       const kbParam = kbEnabled.value ? 'true' : 'false';
-      const url = `http://127.0.0.1:19000/mcp-client/chat/stream/onChat?clientId=${clientId}&prompt=${encodedMessage}&web=${webParam}&kb=${kbParam}`;
+      const url = `http://127.0.0.1:19000/mcp-client/chat/stream/doChatByRag?clientId=${clientId}&prompt=${encodedMessage}&web=${webParam}&knowledgeBase=${kbParam}`;
 
       const eventSource = new EventSource(url);
       currentEventSource = eventSource;
@@ -142,8 +142,13 @@ createApp({
       let fullAnswer = '';
       let isFirstChunk = true;
 
+      eventSource.onopen = () => {
+        console.log('SSE 连接打开')
+      }
+
       eventSource.addEventListener('chunk', (event) => {
         const chunk = resolveContent(event.data);
+        console.log('SSE chunk: ', chunk)
         if (!chunk) return;
 
         if (isFirstChunk) {
@@ -181,7 +186,11 @@ createApp({
       };
 
       eventSource.addEventListener('close', () => {
+        console.log('SSE 连接关闭')
         if (currentEventSource === eventSource) {
+          if (currentEventSource) {
+            currentEventSource.close();
+          }
           currentEventSource = null;
         }
         isThinking.value = false;
