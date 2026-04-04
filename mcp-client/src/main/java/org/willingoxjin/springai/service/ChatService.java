@@ -5,6 +5,7 @@ import org.springframework.ai.document.Document;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.willingoxjin.springai.model.ChatMessageRequest;
 import org.willingoxjin.springai.model.ChatMessageSseRequest;
+import org.willingoxjin.springai.search.SearchResult;
 import reactor.core.publisher.Flux;
 
 /**
@@ -18,6 +19,8 @@ public interface ChatService {
     Flux<String> chatStreamResponse(String prompt);
 
     Flux<String> chatStreamResponse(String prompt, List<Document> ragDocContext);
+
+    Flux<String> chatStreamResponseFromSearch(String prompt, List<SearchResult> results);
 
     SseEmitter doChatOnStreamResponse(ChatMessageSseRequest request);
 

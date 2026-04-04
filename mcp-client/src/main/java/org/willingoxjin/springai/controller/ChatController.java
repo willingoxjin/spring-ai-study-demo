@@ -15,8 +15,11 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import org.willingoxjin.springai.model.ChatMessageContent;
 import org.willingoxjin.springai.model.ChatMessageRequest;
 import org.willingoxjin.springai.model.ChatMessageSseRequest;
+import org.willingoxjin.springai.search.SearchResponse;
+import org.willingoxjin.springai.search.SearchResult;
 import org.willingoxjin.springai.service.ChatService;
 import org.willingoxjin.springai.service.DocumentService;
+import org.willingoxjin.springai.service.WebSearchService;
 import org.willingoxjin.springai.sse.SseEventType;
 import reactor.core.publisher.Flux;
 
@@ -34,6 +37,9 @@ public class ChatController {
     @Resource
     private DocumentService documentService;
 
+    @Resource
+    private WebSearchService webSearchService;
+
     @GetMapping("/test")
     public String chatTest(String prompt) {
         return chatService.chatTest(prompt);
@@ -46,14 +52,18 @@ public class ChatController {
 
     @GetMapping(value = "/stream/doChat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<ChatMessageContent>> chatOnStreamResponse(ChatMessageRequest request) {
-        return chatService.chatStreamResponse(request.getPrompt())
-                .map(content -> ServerSentEvent.builder(ChatMessageContent.Builder.builder().content(content).build())
-                        .event(SseEventType.CHUNK.getValue())
-                        .build()
-                ).concatWith(Flux.just(ServerSentEvent.<ChatMessageContent>builder()
-                        .event(SseEventType.CLOSE.getValue())
-                        .build()
-                ));
+        Flux<String> responseFlux = chatService.chatStreamResponse(request.getPrompt());
+        return formatSse(responseFlux);
+    }
+
+    protected Flux<ServerSentEvent<ChatMessageContent>> formatSse(Flux<String> responseFlux) {
+        return responseFlux.map(content -> ServerSentEvent.builder(ChatMessageContent.Builder.builder().content(content).build())
+                .event(SseEventType.CHUNK.getValue())
+                .build()
+        ).concatWith(Flux.just(ServerSentEvent.builder(ChatMessageContent.Builder.builder().content("").build())
+                .event(SseEventType.CLOSE.getValue())
+                .build()
+        ));
     }
 
     /**
@@ -78,20 +88,22 @@ public class ChatController {
      */
     @GetMapping(value = "/stream/doChatByRag", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<ServerSentEvent<ChatMessageContent>> chatByRag(ChatMessageRequest request) {
-        List<Document> ragDocContext = null;
-        if (request.getKnowledgeBase()) {
-            ragDocContext = documentService.searchDocument(request.getPrompt());
-        }
+        String prompt = request.getPrompt();
 
-        Flux<String> responseFlux = chatService.chatStreamResponse(request.getPrompt(), ragDocContext);
+        List<Document> ragDocContext = documentService.searchDocument(prompt);
 
-        return responseFlux.map(content -> ServerSentEvent.builder(ChatMessageContent.Builder.builder().content(content).build())
-                .event(SseEventType.CHUNK.getValue())
-                .build()
-        ).concatWith(Flux.just(ServerSentEvent.builder(ChatMessageContent.Builder.builder().content("").build())
-                .event(SseEventType.CLOSE.getValue())
-                .build()
-        ));
+        Flux<String> responseFlux = chatService.chatStreamResponse(prompt, ragDocContext);
+
+        return formatSse(responseFlux);
+    }
+
+    @GetMapping(value = "/stream/doChatByWebSearch", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<ServerSentEvent<ChatMessageContent>> chatByWebSearch(ChatMessageRequest request) {
+        String prompt = request.getPrompt();
+        SearchResponse searchResponse = webSearchService.search(prompt);
+        Flux<String> responseFlux = chatService.chatStreamResponseFromSearch(prompt, searchResponse.getResults());
+
+        return formatSse(responseFlux);
     }
 
 }

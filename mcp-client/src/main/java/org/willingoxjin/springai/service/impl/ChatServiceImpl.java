@@ -16,6 +16,7 @@ import org.willingoxjin.springai.consts.PromptConst;
 import org.willingoxjin.springai.model.ChatMessageRequest;
 import org.willingoxjin.springai.model.ChatMessageResponse;
 import org.willingoxjin.springai.model.ChatMessageSseRequest;
+import org.willingoxjin.springai.search.SearchResult;
 import org.willingoxjin.springai.service.ChatService;
 import org.willingoxjin.springai.sse.SseEventType;
 import org.willingoxjin.springai.sse.SseServer;
@@ -54,6 +55,29 @@ public class ChatServiceImpl implements ChatService {
             // RAG Prompt
             String ragContext = ragDocContext.stream().map(Document::getText).collect(Collectors.joining("\n"));
             String docPromptText = PromptConst.buildRagPrompt(ragContext, promptText);
+            prompt = new Prompt(docPromptText);
+        } else {
+            // Default Prompt
+            prompt = new Prompt(promptText);
+        }
+
+        return chatClient.prompt(prompt).stream().content();
+    }
+
+    @Override
+    public Flux<String> chatStreamResponseFromSearch(String promptText, List<SearchResult> results) {
+        Prompt prompt;
+        if (CollectionUtils.isNotEmpty(results)) {
+            String searchPrompt = results.stream()
+                    .map(r -> String.format("""
+                            <context>
+                                [标题] %s
+                                [来源] %s
+                                [摘要] %s
+                            </context>
+                            """, r.getTitle(), r.getUrl(), r.getContent()))
+                    .collect(Collectors.joining("\n"));
+            String docPromptText = PromptConst.buildWebSearchPrompt(searchPrompt, promptText);
             prompt = new Prompt(docPromptText);
         } else {
             // Default Prompt

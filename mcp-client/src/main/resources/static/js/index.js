@@ -1,5 +1,5 @@
 // 从 Vue 全局对象中解构所需 API
-const { createApp, ref, nextTick, onMounted, onBeforeUnmount } = Vue;
+const { createApp, ref, watch, nextTick, onMounted, onBeforeUnmount } = Vue;
 
 // 初始化 Markdown 渲染器
 const initMarkdown = () => {
@@ -48,6 +48,17 @@ createApp({
     const kbEnabled = ref(false);
     const chatMessagesRef = ref(null);
     const textareaRef = ref(null);
+
+    watch(webEnabled, (newVal, oldVal) => {
+      if (newVal !== oldVal && newVal) {
+        kbEnabled.value = false;
+      }
+    })
+    watch(kbEnabled, (newVal, oldVal) => {
+      if (newVal !== oldVal && newVal) {
+        webEnabled.value = false;
+      }
+    })
 
     // 当前活动的 EventSource
     let currentEventSource = null;
@@ -134,7 +145,15 @@ createApp({
       const encodedMessage = encodeURIComponent(text);
       const webParam = webEnabled.value ? 'true' : 'false';
       const kbParam = kbEnabled.value ? 'true' : 'false';
-      const url = `http://127.0.0.1:19000/mcp-client/chat/stream/doChatByRag?clientId=${clientId}&prompt=${encodedMessage}&web=${webParam}&knowledgeBase=${kbParam}`;
+      let reqUrl = 'doChat';
+      if (kbEnabled.value) {
+        reqUrl = 'doChatByRag';
+      }
+      if (webEnabled.value) {
+        reqUrl = 'doChatByWebSearch';
+      }
+
+      const url = `http://127.0.0.1:19000/mcp-client/chat/stream/${reqUrl}?clientId=${clientId}&prompt=${encodedMessage}&webSearch=${webParam}&knowledgeBase=${kbParam}`;
 
       const eventSource = new EventSource(url);
       currentEventSource = eventSource;
