@@ -11,6 +11,7 @@
   <description>Spring AI Study Demo</description>
   <modules>
     <module>mcp-client</module>
+    <module>mcp-server</module>
   </modules>
 
   <properties>

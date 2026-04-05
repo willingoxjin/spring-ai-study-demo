@@ -181,7 +181,6 @@ createApp({
 
         fullAnswer += chunk;
         updateLastBotMessage(fullAnswer);
-        isThinking.value = false;
       });
 
       eventSource.onerror = (error) => {

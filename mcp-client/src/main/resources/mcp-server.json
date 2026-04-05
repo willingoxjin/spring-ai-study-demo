@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "/Users/willingoxjin/Codes/hopdata/java/boqianba/openapi/spring-ai-study-demo/demo/tmp"
+      ]
+    }
+  }
+}

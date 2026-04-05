@@ -33,9 +33,23 @@ spring:
       chat:
         options:
           model: ${OPENAI_CHAT_MODEL} # 模型:deepseek-chat
+          max-tokens: 4096  # 增大最大token数，避免响应截断
     # 向量配置
     vectorstore:
       redis:
         initialize-schema: true             # 是否初始化所需模式
         index-name: rag-vector              # 用于向量存储的索引名
         prefix: 'rag_document:'             # 存储到 Redis key 前缀
+    # mcp
+    mcp:
+      client:
+        enabled: true
+        name: spring-ai-study-demo-mcp-client
+        type: async
+        stdio:
+          servers-configuration: classpath:mcp-server.json
+        sse:
+          connections:
+            amap-sse-server:
+              url: https://mcp.amap.com
+              sse-endpoint: /sse?key=${AMAP_KEY}
