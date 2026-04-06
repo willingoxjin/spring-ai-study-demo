@@ -1,0 +1,30 @@
+server:
+  port: 19100
+  servlet:
+    context-path: /mcp-server
+    # 强制设置编码为 UTF-8
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-response: true
+
+spring:
+  application:
+    name: mcp-server
+
+logging:
+  level:
+    root: info
+    org.willingoxjin: debug
+
+---
+
+spring:
+  ai:
+    mcp:
+      server:
+        name: my-demo-sse  # mcp server 的名称
+        version: 1.0.0        # 版本号
+        sse-endpoint: /sse    # SSE 接口地址
+        type: async           # 异步响应

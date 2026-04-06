@@ -1,4 +1,4 @@
-package org.willingoxjin.springai.model;
+package org.willingoxjin.springai.entity;
 
 import java.io.Serial;
 import java.io.Serializable;

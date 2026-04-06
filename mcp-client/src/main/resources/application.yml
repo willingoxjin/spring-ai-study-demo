@@ -53,3 +53,6 @@ spring:
             amap-sse-server:
               url: https://mcp.amap.com
               sse-endpoint: /sse?key=${AMAP_KEY}
+            my-mcp-server:
+              url: http://127.0.0.1:19100
+              sse-endpoint: /sse

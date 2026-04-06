@@ -3,8 +3,7 @@ package org.willingoxjin.springai.service;
 import java.util.List;
 import org.springframework.ai.document.Document;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import org.willingoxjin.springai.model.ChatMessageRequest;
-import org.willingoxjin.springai.model.ChatMessageSseRequest;
+import org.willingoxjin.springai.entity.ChatMessageSseRequest;
 import org.willingoxjin.springai.search.SearchResult;
 import reactor.core.publisher.Flux;
 
