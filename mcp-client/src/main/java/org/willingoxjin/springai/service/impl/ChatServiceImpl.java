@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,11 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Flux<String> chatStreamResponse(String prompt) {
         return chatClient.prompt(prompt).stream().content();
+        // return chatClient.prompt()
+        //         .user(prompt)
+        //         .advisors(a -> a.param(ChatMemory.CONVERSATION_ID, conversationId))
+        //         .call()
+        //         .content();
     }
 
     @Override
